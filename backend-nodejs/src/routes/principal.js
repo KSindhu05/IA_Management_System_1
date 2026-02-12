@@ -39,7 +39,7 @@ router.get('/dashboard', authMiddleware, roleMiddleware('PRINCIPAL'), async (req
 
         // Mock Data for specific widgets (to be replaced with real DB tables later)
         const hodSubmissionStatus = [
-            { id: 1, dept: 'Computer Science', hod: 'Dr. Wahida Banu', status: 'Approved', punctuality: 'On Time', submissionDate: '2025-10-15', delayDays: 0, completion: 100, priority: 'Normal', remarks: 'All CIE marks verified.' },
+            { id: 1, dept: 'Computer Science', hod: 'MD Jaffar', status: 'Approved', punctuality: 'On Time', submissionDate: '2025-10-15', delayDays: 0, completion: 100, priority: 'Normal', remarks: 'All CIE marks verified.' },
             { id: 2, dept: 'Mechanical', hod: 'Prof. Ramesh Gouda', status: 'Pending', punctuality: 'Delayed', submissionDate: '-', delayDays: 3, completion: 85, priority: 'High Priority', remarks: '2nd Sem B Sec pending.' },
             { id: 3, dept: 'Electronics', hod: 'Dr. Suresh K', status: 'Submitted', punctuality: 'On Time', submissionDate: '2025-10-16', delayDays: 0, completion: 100, priority: 'Normal', remarks: 'Pending Principal approval.' },
             { id: 4, dept: 'Civil Engineering', hod: 'Prof. Anitha R', status: 'Pending', punctuality: 'On Time', submissionDate: '-', delayDays: 0, completion: 60, priority: 'Normal', remarks: 'Data entry in progress.' }

@@ -1175,33 +1175,44 @@ const FacultyDashboard = () => {
                         </div>
                     </section>
 
-                    <section>
-                        <h2 className={styles.sectionTitle}>Quick Actions</h2>
-                        <div className={styles.quickActionsGrid}>
-                            <button className={styles.actionBtn} onClick={() => showToast('Report Generated!')} title="Download consolidated marks sheet">
-                                <FileText size={18} /> Generate Report
-                            </button>
-                            <button className={styles.actionBtn} onClick={() => setShowUploadModal(true)} title="Upload Excel/CSV marks">
-                                <Upload size={18} /> Bulk Marks Upload
-                            </button>
-                            <button className={styles.actionBtn} onClick={() => showToast('Calling Parent...')} title="Direct call via system">
-                                <Phone size={18} /> Parent Call
-                            </button>
-                            <button className={styles.actionBtn} onClick={() => showToast('Downloading Attendance Sheet...')} title="Download monthly attendance">
-                                <Users size={18} /> Attendance Sheet
-                            </button>
-                        </div>
-                    </section>
+
 
 
                 </div>
 
                 <div className={styles.rightColumn}>
+                    {/* Notifications Widget */}
+                    <div className={styles.card}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h2 className={styles.cardTitle} style={{ margin: 0 }}>🔔 Notifications</h2>
+                            <span className={styles.badge} style={{ background: '#eff6ff', color: '#2563eb' }}>{notifications.length} New</span>
+                        </div>
 
+                        <div className={styles.notificationsList}>
+                            {notifications.length > 0 ? (
+                                notifications.slice(0, 5).map((note, idx) => (
+                                    <div key={note.id || idx} className={styles.notifItem}>
+                                        <div className={styles.notifIcon} style={{ background: '#eff6ff', color: '#2563eb' }}>
+                                            <Bell size={16} />
+                                        </div>
+                                        <div className={styles.notifContent}>
+                                            <p className={styles.notifMessage}>{note.message}</p>
+                                            <span className={styles.notifTime}>{new Date(note.createdAt).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className={styles.noNotifications}>
+                                    <Bell size={24} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
+                                    <p>No new notifications</p>
+                                </div>
+                            )}
 
-
-
-
+                            <button className={styles.viewAllBtn} onClick={() => setActiveSection('Notifications')}>
+                                View All Notifications →
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div >
         </>

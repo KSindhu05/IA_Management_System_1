@@ -4,13 +4,12 @@ const { Subject, CIEMark, Student } = require('../models');
 const { Op } = require('sequelize');
 const { authMiddleware } = require('../middleware/auth');
 
-// Get department analytics
+// Get department analytics (per-student basis)
 router.get('/department/:dept/stats', authMiddleware, async (req, res) => {
     try {
         const { dept } = req.params;
 
         // Fetch all marks for the department
-        // We need to join with Subject to filter by department
         const marks = await CIEMark.findAll({
             include: [{
                 model: Subject,
@@ -23,36 +22,51 @@ router.get('/department/:dept/stats', authMiddleware, async (req, res) => {
             return res.json({
                 average: 0,
                 passPercentage: 0,
-                atRiskCount: 0
+                atRiskCount: 0,
+                totalStudents: 0
             });
         }
 
-        let totalMarks = 0;
-        let passedCount = 0;
-        let atRiskCount = 0;
-        const PASS_THRESHOLD = 20; // Assuming 20/50 is pass
-        const RISK_THRESHOLD = 18; // Below 18 is at risk
-
+        // Aggregate marks by student
+        const studentMarks = {};
         marks.forEach(mark => {
-            const score = mark.marks || 0;
-            totalMarks += score;
-
-            if (score >= PASS_THRESHOLD) {
-                passedCount++;
+            const sid = mark.studentId;
+            if (!studentMarks[sid]) {
+                studentMarks[sid] = { total: 0, count: 0 };
             }
+            studentMarks[sid].total += (mark.marks || 0);
+            studentMarks[sid].count++;
+        });
 
-            if (score < RISK_THRESHOLD) {
-                atRiskCount++;
+        const PASS_THRESHOLD = 20; // Average >= 20/50 is pass
+        const RISK_THRESHOLD = 18; // Average < 18/50 is at-risk
+
+        let totalAvg = 0;
+        let passedStudents = 0;
+        let atRiskStudents = 0;
+        const studentIds = Object.keys(studentMarks);
+        const totalStudents = studentIds.length;
+
+        studentIds.forEach(sid => {
+            const avg = studentMarks[sid].total / studentMarks[sid].count;
+            totalAvg += avg;
+
+            if (avg >= PASS_THRESHOLD) {
+                passedStudents++;
+            }
+            if (avg < RISK_THRESHOLD) {
+                atRiskStudents++;
             }
         });
 
-        const average = (totalMarks / marks.length).toFixed(1);
-        const passPercentage = ((passedCount / marks.length) * 100).toFixed(1);
+        const departmentAverage = totalStudents > 0 ? (totalAvg / totalStudents).toFixed(1) : 0;
+        const passPercentage = totalStudents > 0 ? ((passedStudents / totalStudents) * 100).toFixed(1) : 0;
 
         res.json({
-            average: parseFloat(average),
+            average: parseFloat(departmentAverage),
             passPercentage: parseFloat(passPercentage),
-            atRiskCount
+            atRiskCount: atRiskStudents,
+            totalStudents
         });
 
     } catch (error) {

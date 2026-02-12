@@ -102,17 +102,17 @@ const PrincipalDashboard = () => {
     const handleNewBroadcast = useCallback(() => setActiveModal('broadcast'), []);
     const handleSaveFaculty = useCallback((e) => { e.preventDefault(); setActiveModal(null); showToast('Faculty Saved', 'success'); }, [showToast]);
 
-    // MENU ITEMS
+    // MENU ITEMS - format compatible with Sidebar component
     const menuItems = [
-        { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-        { id: 'departments', label: 'Departments', icon: Building },
-        { id: 'faculty', label: 'Faculty Directory', icon: Briefcase },
-        { id: 'directory', label: 'Student Search', icon: Users },
-        { id: 'timetables', label: 'Time Tables', icon: Calendar },
-        { id: 'compliance', label: 'CIE Compliance', icon: ShieldCheck },
-        { id: 'reports', label: 'Reports & Analytics', icon: FileText },
-        { id: 'circulars', label: 'Circulars', icon: Bell },
-        { id: 'grievances', label: 'Grievances', icon: AlertTriangle }
+        { label: 'Overview', path: '#overview', icon: <LayoutDashboard size={20} />, isActive: activeTab === 'overview', onClick: () => setActiveTab('overview') },
+        { label: 'Departments', path: '#departments', icon: <Building size={20} />, isActive: activeTab === 'departments', onClick: () => setActiveTab('departments') },
+        { label: 'Faculty Directory', path: '#faculty', icon: <Briefcase size={20} />, isActive: activeTab === 'faculty', onClick: () => setActiveTab('faculty') },
+        { label: 'Student Search', path: '#directory', icon: <Users size={20} />, isActive: activeTab === 'directory', onClick: () => { setActiveTab('directory'); setSelectedDept(null); } },
+        { label: 'Time Tables', path: '#timetables', icon: <Calendar size={20} />, isActive: activeTab === 'timetables', onClick: () => setActiveTab('timetables') },
+        { label: 'CIE Compliance', path: '#compliance', icon: <ShieldCheck size={20} />, isActive: activeTab === 'compliance', onClick: () => setActiveTab('compliance') },
+        { label: 'Reports & Analytics', path: '#reports', icon: <FileText size={20} />, isActive: activeTab === 'reports', onClick: () => setActiveTab('reports') },
+        { label: 'Circulars', path: '#circulars', icon: <Bell size={20} />, isActive: activeTab === 'circulars', onClick: () => setActiveTab('circulars') },
+        { label: 'Grievances', path: '#grievances', icon: <AlertTriangle size={20} />, isActive: activeTab === 'grievances', onClick: () => setActiveTab('grievances') }
     ];
 
     /* Chart Configs and Helper Logic */
@@ -160,100 +160,61 @@ const PrincipalDashboard = () => {
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh', background: '#f8fafc', fontFamily: 'Inter, sans-serif' }}>
-            {/* --- SIDEBAR --- */}
-            <aside className={styles.sidebar}>
-                <div className={styles.logoContainer}>
-                    <img src={headerLogo} alt="SGP Logo" className={styles.sidebarLogo} />
-                </div>
-
-                <nav className={styles.menuNav}>
-                    {menuItems.map(item => (
-                        <button
-                            key={item.id}
-                            onClick={() => { setActiveTab(item.id); if (item.id === 'directory') setSelectedDept(null); }}
-                            className={`${styles.menuItem} ${activeTab === item.id ? styles.menuItemActive : ''}`}
-                        >
-                            <item.icon size={20} style={{ minWidth: '20px' }} />
-                            <span style={{ flex: 1 }}>{item.label}</span>
-                        </button>
-                    ))}
-                </nav>
-
-                <div style={{ marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
-                    <button
-                        onClick={handleLogout}
-                        className={styles.logoutBtn}
-                    >
-                        <LogOut size={20} />
-                        Logout
-                    </button>
-                </div>
-            </aside>
-
-            {/* --- MAIN CONTENT --- */}
-            <main style={{ flex: 1, overflowY: 'auto', padding: '2rem' }}>
-                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                    <div className={styles.welcomeText}>
-                        <h1 style={{ fontSize: '1.8rem', fontWeight: 700, color: '#1e293b', margin: 0 }}>Hello, Dr. Gowri Shankar</h1>
-                        <p style={{ color: '#64748b', margin: '4px 0 0 0' }}>Principal | Sanjay Gandhi Polytechnic</p>
+        <DashboardLayout menuItems={menuItems}>
+            {/* --- HEADER (Faculty-style) --- */}
+            <header className={styles.header}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div>
+                        <h1 className={styles.welcomeText}>Hello, Dr. Gowri Shankar</h1>
+                        <p className={styles.subtitle}>Principal | Sanjay Gandhi Polytechnic</p>
                     </div>
                     <div className={styles.headerActions}>
-                        <button
-                            className={styles.secondaryBtn}
-                            onClick={() => alert("Downloading Full Institute Report...")}
-                            style={{ padding: '0.5rem', marginRight: '0.5rem', border: 'none', background: '#ecfdf5', color: '#059669', borderRadius: '8px', cursor: 'pointer' }}
-                            title="Download Full Report"
-                        >
-                            <FileText size={20} />
-                        </button>
-                        <StudentSentinel students={deptStudents} /> {/* Ideally fetch all students or use search API */}
+                        <StudentSentinel students={deptStudents} />
                         <select className={styles.yearSelector}>
                             <option>Academic Year 2025-26</option>
                         </select>
                     </div>
-                </header>
-
-                {/* Dynamic Content */}
-                <div className={styles.sectionVisible}>
-                    {activeTab === 'overview' && (
-                        loading ? <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Loading Dashboard...</div> :
-                            <OverviewSection
-                                stats={dashboardData?.stats}
-                                chartData={barData}
-                                branches={dashboardData?.branches}
-                                branchPerformance={dashboardData?.branchPerformance}
-                                lowPerformers={dashboardData?.lowPerformers}
-                                // New Props
-                                facultyAnalytics={dashboardData?.facultyAnalytics} // Not yet in backend
-                                schedule={dashboardData?.dates} // Backend sends 'dates'
-                                approvals={dashboardData?.approvals}
-                                cieStats={dashboardData?.cieStats} // Not yet in backend
-                                trends={dashboardData?.trends} // Not yet in backend
-                                hodSubmissionStatus={dashboardData?.hodSubmissionStatus}
-                            />
-                    )}
-
-                    {activeTab === 'compliance' && <ComplianceSection hodSubmissionStatus={dashboardData?.hodSubmissionStatus} />}
-
-                    {activeTab === 'departments' && <DepartmentSection departments={departments} />}
-
-                    {activeTab === 'directory' && <DirectorySection
-                        departments={departments}
-                        selectedDept={selectedDept}
-                        deptStudents={deptStudents}
-                        handleDeptClick={handleDeptClick}
-                        setSelectedDept={setSelectedDept}
-                    />}
-
-                    {activeTab === 'faculty' && <FacultyDirectorySection facultyMembers={facultyList} onAdd={handleAddFaculty} />}
-
-                    {activeTab === 'timetables' && <TimetablesSection timetables={timetables} onDownload={handleDownload} />}
-                    {activeTab === 'circulars' && <CircularsSection circulars={circulars} onNewBroadcast={handleNewBroadcast} />}
-                    {activeTab === 'reports' && <ReportsSection reports={reports} onDownload={handleDownload} />}
-                    {activeTab === 'grievances' && <GrievancesSection grievances={grievances} onView={() => { }} />}
                 </div>
-            </main>
+            </header>
+
+            {/* Dynamic Content */}
+            <div className={styles.sectionVisible}>
+                {activeTab === 'overview' && (
+                    loading ? <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Loading Dashboard...</div> :
+                        <OverviewSection
+                            stats={dashboardData?.stats}
+                            chartData={barData}
+                            branches={dashboardData?.branches}
+                            branchPerformance={dashboardData?.branchPerformance}
+                            lowPerformers={dashboardData?.lowPerformers}
+                            facultyAnalytics={dashboardData?.facultyAnalytics}
+                            schedule={dashboardData?.dates}
+                            approvals={dashboardData?.approvals}
+                            cieStats={dashboardData?.cieStats}
+                            trends={dashboardData?.trends}
+                            hodSubmissionStatus={dashboardData?.hodSubmissionStatus}
+                        />
+                )}
+
+                {activeTab === 'compliance' && <ComplianceSection hodSubmissionStatus={dashboardData?.hodSubmissionStatus} />}
+
+                {activeTab === 'departments' && <DepartmentSection departments={departments} />}
+
+                {activeTab === 'directory' && <DirectorySection
+                    departments={departments}
+                    selectedDept={selectedDept}
+                    deptStudents={deptStudents}
+                    handleDeptClick={handleDeptClick}
+                    setSelectedDept={setSelectedDept}
+                />}
+
+                {activeTab === 'faculty' && <FacultyDirectorySection facultyMembers={facultyList} onAdd={handleAddFaculty} />}
+
+                {activeTab === 'timetables' && <TimetablesSection timetables={timetables} onDownload={handleDownload} />}
+                {activeTab === 'circulars' && <CircularsSection circulars={circulars} onNewBroadcast={handleNewBroadcast} />}
+                {activeTab === 'reports' && <ReportsSection reports={reports} onDownload={handleDownload} />}
+                {activeTab === 'grievances' && <GrievancesSection grievances={grievances} onView={() => { }} />}
+            </div>
 
             {/* Interaction Modals */}
             <ToastNotification show={toast.show} msg={toast.msg} type={toast.type} />
@@ -270,7 +231,7 @@ const PrincipalDashboard = () => {
                     <button type="submit" className={styles.primaryBtn} style={{ marginTop: '0.5rem', justifyContent: 'center' }}>Save Faculty</button>
                 </form>
             </SimpleModal>
-        </div>
+        </DashboardLayout>
     );
 };
 

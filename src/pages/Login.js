@@ -179,7 +179,7 @@ const Login = () => {
             {/* Team Member Ticker */}
             <div className={styles.tickerContainer}>
                 <div className={styles.tickerContent}>
-                    This project IA MANAGEMENT SYSTEM has been done by C H Praveen kumar, K Sindhu, M Priyanka, V Akshaya, Amrutha, Gouthami, Chandana, Arshiya, Tasmiya
+                    This project IA MANAGEMENT SYSTEM has been done by K Sindhu, M Priyanka, V Akshaya, Amrutha, Gouthami, Chandana, Arshiya, Tasmiya
                 </div>
             </div>
 

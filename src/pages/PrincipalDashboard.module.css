@@ -11,17 +11,25 @@
     padding: 2rem 2rem 0 2rem;
 }
 
-.welcomeText h1 {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #0f172a;
+.welcomeText {
     margin: 0;
-    letter-spacing: -0.02em;
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.1rem;
+    background: linear-gradient(to right, #2563eb, #9333ea, #db2777);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
 }
 
-.welcomeText p {
-    color: #64748b;
+.subtitle {
     margin: 0.5rem 0 0 0;
+    color: #6b7280;
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .headerActions {
